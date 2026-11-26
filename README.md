@@ -29,6 +29,7 @@ Sistem ini dibangun di atas fondasi relasional yang ketat untuk memastikan tidak
 * **`User` (1) ──< (`Order`)** : Seorang pengguna dapat melakukan banyak riwayat pemesanan (*One-to-Many*).
 * **`Menu` (1) ──< (`Order`)** : Menu makanan dapat dipesan ke dalam berbagai entri transaksi pesanan (*One-to-Many* / Relasi Relasional Terkelola).
 
+```Plaintext
 +-------------------------------------------------------+
 |                       USERS                           |
 +-------------------------------------------------------+
