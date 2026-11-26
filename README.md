@@ -29,15 +29,39 @@ Sistem ini dibangun di atas fondasi relasional yang ketat untuk memastikan tidak
 * **`User` (1) ──< (`Order`)** : Seorang pengguna dapat melakukan banyak riwayat pemesanan (*One-to-Many*).
 * **`Menu` (1) ──< (`Order`)** : Menu makanan dapat dipesan ke dalam berbagai entri transaksi pesanan (*One-to-Many* / Relasi Relasional Terkelola).
 
-```text
-+-------------------+       +-------------------+       +-------------------+
-|      USERS        |       |      ORDERS       |       |       MENU        |
-+-------------------+       +-------------------+       +-------------------+
-| PK  id            |       | PK  id            |       | PK  id            |
-|     email (Unique)|<------| FK  userId        |       |     category      |
-|     password      |       |     status        |       |     name          |
-|     role          |       |     createdAt     |       |     price         |
-+-------------------+       +-------------------+       |     description   |
-                                      |                 +-------------------+
-                                      +--------------------------^
-                                        (Relasi Item Pesanan)
++-------------------------------------------------------+
+|                       USERS                           |
++-------------------------------------------------------+
+| PK  id          | UUID / SERIAL  | Primary Key        |
+|     email       | VARCHAR(255)   | Unique, Index      |
+|     password    | VARCHAR(255)   | Hashed (Bcrypt)    |
+|     role        | VARCHAR(50)    | 'admin' | 'customer'|
+|     createdAt   | TIMESTAMP      | Auto Generated     |
++-------------------------------------------------------+
+           │
+           │ 1
+           │
+           │ (One-to-Many: Seorang user dapat memiliki banyak riwayat pesanan)
+           ▼
++-------------------------------------------------------+
+|                      ORDERS                           |
++-------------------------------------------------------+
+| PK  id          | UUID / SERIAL  | Primary Key        |
+| FK  userId      | INT / UUID     | References Users   |
+|     status      | VARCHAR(50)    | PENDING/COMPLETED  |
+|     createdAt   | TIMESTAMP      | Auto Generated     |
++-------------------------------------------------------+
+           │
+           │ 1 (Relasi Penghubung Detail Transaksi Menu)
+           │
+           ▼
++-------------------------------------------------------+
+|                       MENU                            |
++-------------------------------------------------------+
+| PK  id          | UUID / SERIAL  | Primary Key        |
+|     category    | VARCHAR(100)   | Kategori Makanan   |
+|     name        | VARCHAR(150)   | Nama Menu Unik     |
+|     price       | DECIMAL(10,2)  | Harga Satuan       |
+|     description | TEXT           | Detail Menu        |
+|     createdAt   | TIMESTAMP      | Auto Generated     |
++-------------------------------------------------------+
