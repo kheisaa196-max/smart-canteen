@@ -68,21 +68,31 @@ Struktur kode di dalam direktori `src/` dipisahkan secara modular berdasarkan do
 ## 🔄 Alur Kerja Sistem (System Flowchart)
 
 ```mermaid
-flowchart TD
-    Client[Frontend / Swagger UI] -->|HTTP Request + Bearer Token| Guard[JwtAuthGuard]
-    Guard --> Pipe[Global ValidationPipe]
+graph TD
+    %% Styling & Theme Definition
+    classDef clientStyle fill:#e0f2fe,stroke:#0284c7,stroke-width:2px,color:#0f172a,font-weight:bold;
+    classDef securityStyle fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#0f172a;
+    classDef moduleStyle fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#0f172a;
+    classDef dbStyle fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#0f172a,font-weight:bold;
 
-    Pipe --> AuthMod[Auth Module: Login]
-    Pipe --> UserMod[Users Module: Register]
-    Pipe --> MenuMod[Menu Module: CRUD Menu]
-    Pipe --> OrderMod[Orders Module: Transaksi & Status]
+    %% Flow Architecture
+    Client["💻 Client / Frontend / Swagger UI"]:::clientStyle -->|"HTTP Request + Bearer Token 🔑"| AuthGuard["🛡️ JwtAuthGuard & ValidationPipe"]:::securityStyle
 
-    AuthMod <--> DB[(PostgreSQL Supabase)]
-    UserMod <--> DB
-    MenuMod <--> DB
-    OrderMod <--> DB
-Jalankan POST /users/register untuk membuat akun, lalu lakukan POST /auth/login untuk mengambil access_token.
+    AuthGuard --> SubSystem
 
-Klik tombol Authorize di sudut kanan atas Swagger, masukkan token dengan format Bearer <token_anda>, lalu klik Authorize.
+    subgraph SubSystem ["⚙️ SmartCanteen Backend Core Modules"]
+        direction TB
+        AuthMod["🔐 Auth Module<br><i>POST /auth/login</i>"]:::moduleStyle
+        UserMod["👤 Users Module<br><i>POST /users/register</i>"]:::moduleStyle
+        MenuMod["🍔 Menu Module<br><i>CRUD Operations</i>"]:::moduleStyle
+        OrderMod["📦 Orders Module<br><i>Transactions & Status</i>"]:::moduleStyle
+    end
 
-Uji endpoint terproteksi seperti POST /menu, POST /orders, atau GET /orders/my-orders dengan mudah secara interaktif.
+    %% Database Persistence Connection
+    AuthMod --> DB[("🗄️ PostgreSQL Database (Supabase)")]:::dbStyle
+    UserMod --> DB
+    MenuMod --> DB
+    OrderMod --> DB
+
+    %% Feedback / Response Loop
+    DB -->|"JSON Response / Status 200/201"| Client
